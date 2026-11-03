@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ôn Tập Giữa Kỳ 1 Lịch Sử 11</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header Section -->
+  <header class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white sticky top-0 z-30 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-blue-600 p-2.5 rounded-xl shadow-inner">
+          <i class="fa-solid fa-book-bookmark text-xl text-white"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg sm:text-xl leading-tight">LỊCH SỬ 11 - ÔN TẬP GIỮA KỲ I</h1>
+          <p class="text-xs text-blue-200">Năm học 2026 - 2027 | Đề thi Trắc nghiệm & Đúng/Sai</p>
+        </div>
+      </div>
+
+      <!-- Action & Stats Info -->
+      <div class="flex items-center space-x-4">
+        <div class="hidden sm:flex items-center bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-sm">
+          <i class="fa-regular fa-clock text-amber-400 mr-2"></i>
+          <span id="timer" class="font-mono font-semibold text-amber-300">45:00</span>
+        </div>
+        
+        <button id="shuffleBtn" onclick="shuffleAll()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-medium px-3.5 py-2 rounded-lg text-sm shadow transition-all duration-150 flex items-center gap-1.5" title="Xáo trộn câu hỏi và đáp án">
+          <i class="fa-solid fa-shuffle"></i>
+          <span class="hidden sm:inline">Xáo Trộn Đề</span>
+        </button>
+
+        <button id="submitBtnTop" onclick="confirmSubmit()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-medium px-4 py-2 rounded-lg text-sm shadow transition-all duration-150 flex items-center gap-1.5">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Nộp Bài</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation & Tab Controls -->
+  <div class="bg-white border-b border-slate-200 sticky top-[57px] z-20 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between overflow-x-auto custom-scrollbar">
+      <div class="flex space-x-2 py-2">
+        <button id="tab-p1" onclick="switchTab('p1')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 bg-indigo-50 text-indigo-700 border border-indigo-200">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Phần 1: Trắc Nghiệm (40 Câu)</span>
+          <span id="badge-p1" class="bg-indigo-200 text-indigo-800 text-xs px-2 py-0.5 rounded-full">0/40</span>
+        </button>
+        <button id="tab-p2" onclick="switchTab('p2')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-2 border border-transparent">
+          <i class="fa-solid fa-square-check"></i>
+          <span>Phần 2: Đúng / Sai (8 Tư liệu)</span>
+          <span id="badge-p2" class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full">0/32</span>
+        </button>
+      </div>
+
+      <div class="sm:hidden flex items-center text-xs font-mono bg-amber-50 text-amber-700 px-2.5 py-1 rounded border border-amber-200 ml-2 whitespace-nowrap">
+        <i class="fa-regular fa-clock mr-1"></i> <span id="timerMobile">45:00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Layout -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow flex flex-col lg:flex-row gap-6 w-full">
+    
+    <!-- Questions Container -->
+    <div class="flex-grow w-full lg:w-3/4 space-y-6">
+
+      <!-- Section 1: Multiple Choice -->
+      <section id="section-p1" class="space-y-6">
+        <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+          <i class="fa-solid fa-circle-info text-blue-600 text-xl mt-0.5"></i>
+          <div>
+            <h3 class="font-bold text-blue-900">PHẦN 1: TRẮC NGHIỆM NGHỆU CHỌN (40 CÂU)</h3>
+            <p class="text-sm text-blue-700">Hãy chọn duy nhất 01 phương án đúng nhất cho mỗi câu hỏi dưới đây.</p>
+          </div>
+        </div>
+
+        <div id="p1-questions-container" class="space-y-6">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Section 2: True/False -->
+      <section id="section-p2" class="hidden space-y-6">
+        <div class="bg-purple-50/70 border border-purple-200 rounded-xl p-4 flex items-start gap-3">
+          <i class="fa-solid fa-file-lines text-purple-600 text-xl mt-0.5"></i>
+          <div>
+            <h3 class="font-bold text-purple-900">PHẦN 2: CÂU HỎI TRẮC NGHIỆM ĐÚNG SAI (8 ĐOẠN TƯ LIỆU)</h3>
+            <p class="text-sm text-purple-700">Đọc kỹ từng đoạn tư liệu và lựa chọn Đúng hoặc Sai cho mỗi ý a, b, c, d tương ứng.</p>
+          </div>
+        </div>
+
+        <div id="p2-questions-container" class="space-y-6">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Sidebar: Quick Question Navigator -->
+    <aside class="w-full lg:w-1/4 flex-shrink-0">
+      <div class="sticky top-28 bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-4">
+        <h3 class="font-bold text-slate-800 flex items-center justify-between border-b pb-2 text-sm">
+          <span><i class="fa-solid fa-table-cells mr-1.5 text-indigo-600"></i> Danh Sách Câu Hỏi</span>
+          <span id="totalProgress" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">0/72 Hoàn thành</span>
+        </h3>
+
+        <!-- P1 Navigator Grid -->
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-2">Phần 1: Trắc nghiệm</span>
+          <div id="nav-p1-grid" class="grid grid-cols-8 gap-1.5 max-h-48 overflow-y-auto custom-scrollbar p-1">
+            <!-- Nav buttons -->
+          </div>
+        </div>
+
+        <!-- P2 Navigator Grid -->
+        <div class="border-t pt-3">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-2">Phần 2: Đúng / Sai</span>
+          <div id="nav-p2-grid" class="grid grid-cols-4 gap-1.5 max-h-48 overflow-y-auto custom-scrollbar p-1">
+            <!-- Nav buttons -->
+          </div>
+        </div>
+
+        <!-- Action Submit -->
+        <div class="border-t pt-4">
+          <button onclick="confirmSubmit()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-sm active:scale-95 transition-all text-sm flex items-center justify-center gap-2">
+            <i class="fa-solid fa-check-double"></i>
+            <span>NỘP BÀI THI</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Modal Kết Quả -->
+  <div id="resultModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 transform transition-all animate-fade-in my-8">
+      
+      <div class="text-center space-y-3">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full mb-1">
+          <i class="fa-solid fa-trophy text-3xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-900">KẾT QUẢ BÀI THI</h2>
+        <p class="text-sm text-slate-500">Chúc mừng bạn đã hoàn thành bài ôn tập Lịch sử 11!</p>
+      </div>
+
+      <!-- Score Card -->
+      <div class="my-6 bg-slate-50 rounded-xl p-4 border border-slate-200 grid grid-cols-2 gap-4 text-center">
+        <div class="border-r border-slate-200 pr-2">
+          <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold block">Tổng điểm quy đổi</span>
+          <span id="finalScore" class="text-3xl font-extrabold text-emerald-600">0.0</span>
+          <span class="text-xs text-slate-400 block">/ 10.0 Điểm</span>
+        </div>
+        <div class="pl-2">
+          <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold block">Số câu trả lời đúng</span>
+          <span id="correctAnswersCount" class="text-3xl font-extrabold text-indigo-600">0</span>
+          <span id="totalQuestionsCount" class="text-xs text-slate-400 block">/ 72 Ý</span>
+        </div>
+      </div>
+
+      <div class="space-y-2 text-sm text-slate-600 border-t pt-4">
+        <div class="flex justify-between">
+          <span>Phần 1 (Trắc nghiệm):</span>
+          <span id="p1ResultText" class="font-semibold text-slate-800">0/40 câu</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Phần 2 (Đúng / Sai):</span>
+          <span id="p2ResultText" class="font-semibold text-slate-800">0/32 ý</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Thời gian làm bài:</span>
+          <span id="timeSpentText" class="font-semibold text-slate-800">00:00</span>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <button onclick="closeModalAndReview()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg text-sm shadow transition text-center">
+          <i class="fa-solid fa-magnifying-glass mr-1.5"></i> Xem Chi Tiết Đáp Án
+        </button>
+        <button onclick="location.reload()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-lg text-sm transition text-center">
+          <i class="fa-solid fa-rotate-right mr-1.5"></i> Làm Lại Đề Thi
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+      Đề ôn tập Giữa Kỳ 1 Lịch Sử 11 (Năm học 2026 - 2027) &bull; Thiết kế với HTML5, Tailwind CSS & JavaScript
+    </div>
+  </footer>
+
+  <!-- DATA & LOGIC JAVASCRIPT -->
+  <script>
+    // --- DATABASE BÀI THI ---
+    const rawP1Data = [
+      { id: 1, q: "Giai cấp nào sau đây giữ vai trò lãnh đạo cuộc Cách mạng tháng Mười (1917) ở nước Nga?", options: ["Tư sản.", "Nông dân.", "Công nhân.", "Địa chủ."], ans: 2 },
+      { id: 2, q: "Cách mạng tháng Mười Nga năm 1917 có tác động nào sau đây đến cách mạng Việt Nam?", options: ["Xác định được kẻ thù nguy hiểm nhất cho cách mạng Việt Nam.", "Là nguồn cổ vũ, động viên to lớn đối với cách mạng Việt Nam.", "Đưa cuộc cách mạng Việt Nam giành được thắng lợi quyết định.", "Mở đầu quá trình tiến lên chủ nghĩa tư bản của nhà nước mới."], ans: 1 },
+      { id: 3, q: "Cuộc Cách mạng tháng Mười năm 1917 ở Nga thắng lợi đã", options: ["hoàn thành triệt để cuộc cách mạng công nghệ.", "đưa giai cấp nông dân lên nắm quyền lãnh đạo.", "lật đổ được chính phủ của giai cấp tư sản Nga.", "giải phóng được loài người khỏi chế độ phát xít."], ans: 2 },
+      { id: 4, q: "Năm 1917, nhân dân Nga thực hiện một trong những nhiệm vụ nào sau đây?", options: ["Hoàn thành phổ cập giáo dục đại học.", "Xóa bỏ hoàn toàn chủ nghĩa phát xít.", "Tiến hành cách mạng công nghiệp.", "Thành lập Chính quyền Xô viết."], ans: 3 },
+      { id: 5, q: "Cách mạng tháng Hai năm 1917 ở Nga đã lật đổ", options: ["chế độ phong kiến.", "nhà nước vô sản.", "chính quyền vô sản.", "giai cấp tư sản."], ans: 0 },
+      { id: 6, q: "Cách mạng tháng Mười Nga năm 1917 thực hiện nhiệm vụ nào sau đây?", options: ["Bảo vệ đất nước trước thế lực phát xít.", "Đấu tranh chống phản động thuộc địa.", "Thành lập nhà nước phong kiến mới.", "Giành chính quyền về tay nhân dân."], ans: 3 },
+      { id: 7, q: "Cách mạng tháng Mười Nga năm 1917 thành công có ý nghĩa nào sau đây?", options: ["Chủ nghĩa xã hội trở thành hệ thống hoàn chỉnh trên thế giới.", "Mở ra con đường giải phóng cho các dân tộc thuộc địa, lệ thuộc.", "Xoá bỏ hệ thống kinh tế bóc lột của chủ nghĩa tư bản ở châu Âu.", "Hoàn thành cuộc đấu tranh chống áp bức, bóc lột trên thế giới."], ans: 1 },
+      { id: 8, q: "Ngay sau Cách mạng tháng Mười Nga năm 1917, Chính quyền Xô viết do Lênin đứng đầu đã thông qua văn kiện nào sau đây?", options: ["Hiến chương Liên hợp quốc.", "Tuyên ngôn Quốc tế Nhân quyền.", "Hiệp ước Ba-li.", "Sắc lệnh ruộng đất."], ans: 3 },
+      { id: 9, q: "Ngày 25-10-1917, Đại hội Xô Viết toàn Nga lần II đã thông qua quyết định nào sau đây?", options: ["Thành lập Chính quyền Xô viết.", "Thực hiện Chính sách cộng sản thời chiến.", "Bước đầu xây dựng các đội tự vệ đỏ.", "Ban hành Chính sách kinh tế mới."], ans: 0 },
+      { id: 10, q: "Sự kiện nào sau đây đã chấm dứt tình trạng cục diện hai chính quyền đại diện cho lợi ích của các giai cấp khác nhau tồn tại song song ở nước Nga năm 1917?", options: ["Chính phủ lâm thời được thành lập.", "Cách mạng tháng Hai thành công.", "Sắc lệnh hòa bình được ban bố.", "Cách mạng tháng Mười thành công."], ans: 3 },
+      { id: 11, q: "Năm 1917, Cách mạng tháng Mười Nga thành công đưa đến sự ra đời của Chính quyền", options: ["Xô viết.", "Tư sản.", "Phong kiến.", "Quân chủ."], ans: 0 },
+      { id: 12, q: "Ngay sau khi thành lập, chính quyền Xô viết ở Nga do Lê-nin đứng đầu đã có một trong những chủ trương nào sau đây?", options: ["Lãnh đạo nhân dân Nga lật đổ chế độ quân chủ lập hiến.", "Ban hành “Sắc lệnh Hòa bình”, “Sắc lệnh Ruộng đất”.", "Giúp đỡ các nước xã hội chủ nghĩa xây dựng đất nước.", "Đẩy mạnh thực hiện việc “cải tổ” toàn diện đất nước."], ans: 1 },
+      { id: 13, q: "Cuộc cách mạng nào sau đây được coi là sự kiện mở đầu cho thời kỳ chủ nghĩa xã hội hiện thực trên thế giới?", options: ["Cách mạng tháng Mười Nga (1917).", "Cách mạng tư sản Pháp (1789).", "Cách mạng Tân Hợi (1911).", "Cách mạng tháng Hai (1917)."], ans: 0 },
+      { id: 14, q: "Sau Cách mạng tháng Hai năm 1917, giai cấp tư sản ở nước Nga đã thành lập", options: ["Chính phủ tư sản lâm thời.", "Chính phủ dân tộc dân chủ.", "Chính quyền Xô viết công nông.", "Chính phủ dân chủ cộng hòa."], ans: 0 },
+      { id: 15, q: "Sau Cách mạng tháng Hai năm 1917, chính quyền cách mạng của quần chúng nhân dân được thiết lập ở nước Nga được gọi là", options: ["chính phủ tư sản lâm thời.", "chính phủ dân tộc dân chủ.", "chính quyền Xô viết.", "chính phủ dân chủ cộng hòa."], ans: 2 },
+      { id: 16, q: "Một trong những ý nghĩa quan trọng của Chiến tranh giành độc lập ở Bắc Mỹ vào thế kỉ XVIII là", options: ["thúc đẩy chủ nghĩa xã hội phát triển ở các nước châu Á.", "mở đầu quá trình thống nhất các quốc gia ở châu Âu.", "trực tiếp xóa bỏ chế độ phong kiến ở toàn bộ châu Mỹ.", "thành lập nhà nước tư sản đầu tiên nằm ngoài châu Âu."], ans: 3 },
+      { id: 17, q: "Nửa sau thế kỉ XVII, chủ nghĩa tư bản được xác lập ở các quốc gia nào sau đây?", options: ["Hà Lan và Anh.", "Anh và Pháp.", "Pháp và Bắc Mỹ.", "Hà Lan và Đức."], ans: 0 },
+      { id: 18, q: "Yếu tố nào sau đây đưa đến sự chuyển biến của chủ nghĩa tư bản từ giai đoạn tự do cạnh tranh sang giai đoạn độc quyền?", options: ["Sự hình thành và phát triển của những tổ chức liên kết đa khu vực trên toàn cầu.", "Sự sáp nhập của các công ty độc quyền và sự ra đời các tổ chức tín dụng quốc tế.", "Sự hình thành và phát triển của các trung tâm kinh tế - tài chính lớn trên thế giới.", "Sự phát triển của lực lượng sản xuất dưới tác động của tiến bộ khoa học - kỹ thuật."], ans: 3 },
+      { id: 19, q: "Việc chủ nghĩa tư bản hiện đại chú trọng phát triển năng lượng xanh và sạch chủ yếu nhằm", options: ["hạn chế vai trò của khoa học – công nghệ hiện đại.", "giảm phụ thuộc vào nguồn năng lượng truyền thống.", "mở rộng phạm vi ảnh hưởng của các nước tư bản.", "thay thế hoàn toàn các nguồn năng lượng hóa thạch."], ans: 1 },
+      { id: 20, q: "Lĩnh vực nào sau đây là tiềm năng phát triển của chủ nghĩa tư bản hiện đại?", options: ["Bất bình đẳng xã hội.", "Cơ cấu giai cấp xã hội.", "Phân hóa giàu - nghèo.", "Khoa học – công nghệ."], ans: 3 },
+      { id: 21, q: "Sự kiện nào sau đây đánh dấu hoàn thành quá trình thành lập Nhà nước Liên bang Cộng hòa xã hội chủ nghĩa đầu tiên trên thế giới?", options: ["Bản Hiến pháp đầu tiên của Liên Xô được thông qua.", "Hoàn thành quá trình khôi phục và phát triển kinh tế.", "Bản Hiệp ước Liên bang lần đầu tiên được thông qua.", "Thắng lợi trong đấu tranh chống thù trong, giặc ngoài."], ans: 0 },
+      { id: 22, q: "Đối với trong nước, Liên bang cộng hòa xã hội chủ nghĩa Xô Viết ra đời có ý nghĩa nào?", options: ["Thúc đẩy phong trào giải phóng dân tộc thế giới phát triển.", "Kiềm chế sự phát triển của chủ nghĩa tư bản trên toàn cầu.", "Xác lập chế độ xã hội chủ nghĩa trên toàn lãnh thổ Liên Xô.", "Xây dựng được liên minh quân sự chống lại Đức Quốc xã."], ans: 2 },
+      { id: 23, q: "Nội dung nào sau đây là sự kiện đầu tiên tạo tiền đề cho sự ra đời của hệ thống xã hội chủ nghĩa trên thế giới?", options: ["Liên bang Cộng hòa xã hội chủ nghĩa Xô viết ra đời.", "Nước Cộng hòa Nhân dân Trung Hoa được thành lập.", "Cuộc Cách mạng tháng Tám ở Việt Nam thành công.", "Liên Xô và Mỹ tuyên bố chấm dứt Chiến tranh lạnh."], ans: 0 },
+      { id: 24, q: "Thắng lợi nào dẫn đến sự ra đời của Nhà nước xã hội chủ nghĩa đầu tiên trên thế giới?", options: ["Công xã Pa-ri năm 1871 ở Pháp.", "Cách mạng tháng Hai Nga (1917).", "Cách mạng tháng Mười Nga (1917).", "Cách mạng Nga năm 1905 - 1907."], ans: 2 },
+      { id: 25, q: "Nội dung nào sau đây phản ánh đúng tiền đề kinh tế dẫn đến sự bùng nổ và thắng lợi của các cuộc cách mạng tư sản trong khoảng thế kỉ XVI đến cuối thế kỉ XVIII?", options: ["Những rào cản của chế độ phong kiến kim hãm kinh tế tư bản chủ nghĩa.", "Triết học Ánh sáng được hình thành, dọn đường cho quần chúng nhân dân.", "Quan hệ sản xuất tư bản chủ nghĩa thay thế hoàn toàn quan hệ phong kiến.", "Giai cấp tư sản và đồng minh của họ có thế lực rất lớn về kinh tế, chính trị."], ans: 0 },
+      { id: 26, q: "Nhiệm vụ dân tộc của các cuộc cách mạng tư sản trong khoảng thế kỉ XVI đến cuối thế kỉ XVIII chủ yếu nhằm", options: ["củng cố quyền lực nhà vua và mở rộng đặc quyền quý tộc.", "xóa bỏ tình trạng phong kiến cát cứ hoặc giải phóng dân tộc.", "xóa bỏ chế độ quân chủ chuyên chế và xác lập nền dân chủ.", "xây dựng xã hội bình đẳng và xóa bỏ mọi hình thức tư hữu."], ans: 1 },
+      { id: 27, q: "Các cuộc cách mạng tư sản trong khoảng thế kỉ XVI đến cuối thế kỉ XVIII đều nhằm mục tiêu nào sau đây?", options: ["Thúc đẩy chế độ chính trị mới phát triển.", "Hạn chế ảnh hưởng tư tưởng dân chủ tư sản.", "Xóa bỏ hệ thống các nước xã hội chủ nghĩa.", "Giải quyết triệt để vấn đề người cày có ruộng."], ans: 0 },
+      { id: 28, q: "Một trong những ý nghĩa quan trọng của Chiến tranh giành độc lập ở Bắc Mỹ vào thế kỷ XVIII là", options: ["thúc đẩy chủ nghĩa xã hội phát triển ở các nước châu Á.", "mở đầu quá trình thống nhất các quốc gia ở châu Âu.", "trực tiếp xóa bỏ chế độ phong kiến ở toàn bộ châu Mỹ.", "thành lập nhà nước tư sản đầu tiên nằm ngoài châu Âu."], ans: 3 },
+      { id: 29, q: "Yếu tố nào sau đây đưa đến sự chuyển biến của chủ nghĩa tư bản từ giai đoạn tự do cạnh tranh sang giai đoạn độc quyền?", options: ["Sự hình thành và phát triển của những tổ chức liên kết đa khu vực trên toàn cầu.", "Sự sáp nhập của các công ty độc quyền và sự ra đời các tổ chức tín dụng quốc tế.", "Sự hình thành và phát triển của các trung tâm kinh tế - tài chính lớn trên thế giới.", "Sự phát triển của lực lượng sản xuất dưới tác động của tiến bộ khoa học - kỹ thuật."], ans: 3 },
+      { id: 30, q: "Nội dung nào sau đây không phản ánh đúng thách thức của chủ nghĩa tư bản hiện đại?", options: ["Các thiết chế dân chủ vẫn còn nhiều tồn tại vấn đề bất ổn.", "Tiềm ẩn những nguy cơ khủng hoảng mang tính toàn cầu.", "Có bề dày kinh nghiệm và phương pháp quản lý kinh tế.", "Phải đối mặt với nhiều vấn đề an ninh phi truyền thống."], ans: 2 },
+      { id: 31, q: "Yếu tố nào không phải là nguyên tắc tồn tại của Liên bang Cộng hòa xã hội chủ nghĩa Xô viết", options: ["Sự bình đẳng về mọi mặt.", "Quyền tự quyết của các dân tộc.", "Xây dựng liên minh mạnh, mở rộng quan hệ với bên ngoài.", "Sự giúp đỡ lẫn nhau vì mục tiêu xây dựng thành công chủ nghĩa xã hội."], ans: 2 },
+      { id: 32, q: "Tính chất của cách mạng tháng Hai ở Nga là gì?", options: ["Dân chủ tư sản kiểu cũ.", "Dân chủ tư sản kiểu mới.", "Xã hội chủ nghĩa.", "Vô sản kiểu mới."], ans: 1 },
+      { id: 33, q: "Đối với Liên Xô, việc thành lập Liên bang Cộng hòa xã hội chủ nghĩa Xô viết năm 1922 có ý nghĩa nào sau đây?", options: ["Tạo sức mạnh để nhân dân Liên Xô bảo vệ tổ quốc.", "Đánh dấu chủ nghĩa xã hội trở thành hệ thống thế giới.", "Cổ vũ các dân tộc bị áp bức đứng lên đấu tranh tự giải phóng.", "Giúp cho các dân tộc thuộc địa tìm ra con đường cứu nước."], ans: 0 },
+      { id: 34, q: "Việc thành lập Liên bang Cộng hòa xã hội chủ nghĩa Xô viết năm 1922 có ý nghĩa", options: ["Tạo tiền đề cho sự ra đời của hệ thống xã hội chủ nghĩa.", "Đánh dấu chủ nghĩa xã hội trở thành hệ thống thế giới.", "Đánh dấu sự sụp đổ hoàn toàn của chính phủ tư sản lâm thời.", "Tạo nên sức mạnh tổng hợp để Liên Xô xây dựng chủ nghĩa xã hội."], ans: 3 },
+      { id: 35, q: "Năm 1924, bản hiến pháp đầu tiên của Liên Xô được thông qua, đánh dấu", options: ["sự hoàn thành quá trình thành lập Nhà nước Liên bang Cộng hoà xã hội chủ nghĩa Xô viết.", "sự hoàn thành quá trình thành lập Nhà nước chủ nghĩa tư bản hiện đại đầu tiên trên thế giới.", "sự xác lập Nhà nước vô sản đầu tiên trên thế giới đấu tranh cho quyền lợi của mọi giai cấp.", "sự xác lập và xây dựng mô hình nhà nước mới trên cơ sở mô hình nhà nước phong kiến."], ans: 0 },
+      { id: 36, q: "Liên Xô là tên gọi tắt của", options: ["Liên minh các đảng phái chính trị ở nước Nga.", "Phong trào liên kết các nước cộng hòa Xô viết.", "Liên hiệp các nước xã hội chủ nghĩa Xô viết.", "Liên bang Cộng hòa xã hội chủ nghĩa Xô viết."], ans: 3 },
+      { id: 37, q: "Khi mới thành lập, Liên Xô gồm 4 nước Cộng hoà Xô viết đầu tiên là", options: ["Nga, U-crai-na, Ngoại Cáp-ca-dơ và Latvia.", "Nga, Bê-lô-rút-xi-a, Ngoại Cáp-ca-dơ và Latvia.", "Nga, Bê-lô-rút-xi-a, U-crai-na và Ngoại Cáp-ca-dơ.", "Nga, Bê-lô-rút-xi-a, U-crai-na, Kazakhtan."], ans: 2 },
+      { id: 38, q: "Cuộc Cách mạng tháng Hai năm 1917 ở Nga đã thực hiện được nhiệm vụ nào sau đây?", options: ["Lật đổ chế độ phong kiến Nga hoàng.", "Lật đổ Chính phủ tư sản lâm thời.", "Đánh bại sự can thiệp của các đế quốc.", "Đánh bại liên minh phong kiến, tư sản."], ans: 0 },
+      { id: 39, q: "Nội dung nào sau đây không phản ánh đúng ý nghĩa của Sắc lệnh hoà bình năm 1917 ở nước Nga Xô viết?", options: ["Thể hiện khát vọng hoà bình của nhân dân Nga và thế giới.", "Đặt nền móng cho chính sách đối ngoại của nhà nước Xô viết.", "Mở ra thời đại của chính sách ngoại giao hòa bình và hữu nghị giữa các dân tộc.", "Mở ra thời đại thắng lợi và củng cố chế độ xã hội chủ nghĩa trên thế giới."], ans: 3 },
+      { id: 40, q: "Vì sao ở Nga từ tháng 2 đến tháng 10, đảng Bôn sê vích lựa chọn phương pháp đấu tranh hòa bình?", options: ["Thỏa hiệp với chính phủ lâm thời của giai cấp tư sản.", "Tranh thủ thời gian để tập hợp đông đảo quần chúng nhân dân lao động.", "Xảy ra mâu thuẫn trong nội bộ của Đảng Bôn sê vích.", "Đàm phán với chính phủ lâm thời của giai cấp tư sản."], ans: 1 }
+    ];
+
+    const rawP2Data = [
+      {
+        id: 1,
+        doc: "“Sau khi giành chính quyền, Đại hội Xô viết toàn Nga lần thứ 2 vào ngày 26/10 đã thông qua danh sách Hội đồng ủy viên nhân dân (chính phủ) do Lênin đứng đầu và Ban chấp hành Trung ương các Xô viết toàn Nga do Sverlov đứng đầu. Hệ thống chính quyền nhà nước Xô viết từ trung ương tới địa phương đã được khẩn trương xây dựng... Các Xô viết đại biểu nông dân và các Xô viết đại biểu công nhân và binh lính ở các địa phương cũng được tiến hành hợp nhất thành một chính quyền duy nhất”. (Ngô Minh Oanh, 100 năm Cách mạng tháng Mười Nga và Chủ nghĩa xã hội...)",
+        subQuestions: [
+          { label: "a", text: "Đại hội Xô viết toàn Nga lần thứ 2 vào ngày 26/10/1917 có vai trò quan trọng trong việc thành lập nhà nước Xô viết.", ans: true },
+          { label: "b", text: "Việc hợp nhất các Xô viết đại biểu nông dân, công nhân và binh lính thành một chính quyền duy nhất là yêu cầu duy nhất của nước Nga sau Cách mạng tháng Mười.", ans: false },
+          { label: "c", text: "Việc xây dựng chính quyền Xô viết từ trung ương đến địa phương trong thời gian ngắn chủ yếu vì vai trò thống trị tuyệt đối của quân đội trong bộ máy nhà nước.", ans: false },
+          { label: "d", text: "Việc Đại hội Xô viết toàn Nga lần thứ II thông qua danh sách Hội đồng Ủy viên nhân dân do Lênin đứng đầu đã khẳng định quyền lãnh đạo của Đảng Dân chủ Xã hội Nga.", ans: true }
+        ]
+      },
+      {
+        id: 2,
+        doc: "“Bài học về việc biến nước Nga từ chỗ là “nhà tù của các dân tộc” thời Sa hoàng trở thành một nhà nước liên bang thống nhất của hơn 120 dân tộc được xây dựng trên cơ sở tư tưởng và chính sách của Lênin: tự nguyện, bình đẳng, tôn trọng lẫn nhau, hợp tác giúp đỡ cùng nhau xây dựng chủ nghĩa xã hội và bảo vệ Tổ quốc Xô viết. Thời Lênin, các cộng đồng dân tộc ở Liên Xô sống trong sự đoàn kết, bình đẳng nhờ Chính phủ thực hiện chính sách dân tộc đúng đắn”. (Đỗ Thanh Bình, Tạp chí Nghiên cứu châu Âu, số 6, 2002...)",
+        subQuestions: [
+          { label: "a", text: "Đoạn tư liệu đề cập đến sự ra đời của nhà nước Liên bang Cộng hoà xã hội chủ nghĩa Xô viết.", ans: true },
+          { label: "b", text: "Lênin nhấn mạnh yếu tố “tự nguyện” trong việc xây dựng nhà nước Liên bang Cộng hoà xã hội chủ nghĩa Xô viết chủ yếu nhằm tránh sự can thiệp của các nước đế quốc.", ans: false },
+          { label: "c", text: "Việc coi trọng sự “tự nguyện, bình đẳng, tôn trọng lẫn nhau” trong quá trình xây dựng nhà nước Liên bang Cộng hoà xã hội chủ nghĩa Xô viết là yêu cầu của các nước phương Tây lúc đó.", ans: false },
+          { label: "d", text: "Việc Lênin chủ trương “hợp tác giúp đỡ lẫn nhau” giữa các dân tộc trong Liên bang Cộng hoà xã hội chủ nghĩa Xô viết thể hiện sự kết hợp hài hòa giữa lợi ích dân tộc và lợi ích giai cấp.", ans: true }
+        ]
+      },
+      {
+        id: 3,
+        doc: "“Nhưng bước vào thời kỳ hòa bình, với nhiệm vụ xây dựng chủ nghĩa xã hội và giữ vững nền quốc phòng an ninh, các nước Cộng hòa Xô viết càng phải thống nhất, đoàn kết chặt chẽ hơn nữa, nhất là về kinh tế và chính trị, trong một Liên bang duy nhất về mặt Nhà nước. Hệ thống hiệp ước liên minh giữa các nước cộng hòa trước đây vẫn không đủ đảm bảo sự thống nhất kinh tế cần thiết... Việc đập tan cuộc can thiệp vũ trang của nước ngoài cũng chưa phải đã xóa bỏ hoàn toàn những nguy cơ xâm lược của chủ nghĩa đế quốc...”. (Nguyễn Anh Thái, Lịch sử thế giới hiện đại, Nxb Giáo dục, 2006)",
+        subQuestions: [
+          { label: "a", text: "Đoạn tư liệu trên đề cập đến nhu cầu thành lập Liên bang Xô viết và yêu cầu thống nhất các nước Cộng hoà Xô viết sau Cách mạng Tháng Mười Nga.", ans: true },
+          { label: "b", text: "Sau khi bước vào thời kỳ hòa bình, các nước Cộng hòa Xô viết phải tăng cường thống nhất, đoàn kết hơn trước vì sự can thiệp của phương Tây đã hoàn toàn chấm dứt.", ans: false },
+          { label: "c", text: "Việc hệ thống hiệp ước liên minh trước đó không đảm bảo được sự thống nhất kinh tế cần thiết là một trong những yêu cầu cấp thiết thành lập Liên bang Xô viết.", ans: true },
+          { label: "d", text: "Việc các nước Cộng hòa Xô viết cần liên kết trong một Liên bang duy nhất chứng tỏ mô hình chủ nghĩa xã hội chỉ có thể tồn tại trong một quốc gia đơn nhất.", ans: false }
+        ]
+      },
+      {
+        id: 4,
+        doc: "“Sự ra đời của Liên bang Xô viết có ý nghĩa vô cùng quan trọng. Đây là thắng lợi của chính sách dân tộc theo chủ nghĩa Lênin, mở ra một con đường đúng đắn trong việc giải quyết vấn đề dân tộc, thủ tiêu những bất bình đẳng giữa các dân tộc, củng cố và tăng cường sức mạnh của nhà nước Xô viết...”. (Ngô Minh Oanh, 100 năm Cách mạng tháng Mười Nga...)",
+        subQuestions: [
+          { label: "a", text: "Đoạn tư liệu trên đề cập đến quá trình và ý nghĩa lịch sử ra đời của Liên bang Xô viết.", ans: true },
+          { label: "b", text: "Sự thành lập Liên bang Xô viết là thành tựu cuối cùng được thực hiện dưới sự lãnh đạo trực tiếp của Đảng Cộng sản Nga, do Lênin đứng đầu.", ans: false },
+          { label: "c", text: "Sự ra đời của Liên bang Xô viết là “thắng lợi của chính sách dân tộc theo chủ nghĩa Lênin” vì thể hiện đúng đắn tư tưởng bình đẳng, đoàn kết và tự nguyện giữa các dân tộc.", ans: true },
+          { label: "d", text: "Sự ra đời của Liên bang Xô viết đã có tác động mạnh đến quan hệ quốc tế, đánh dấu sự hình thành hệ thống xã hội chủ nghĩa trên thế giới.", ans: false }
+        ]
+      },
+      {
+        id: 5,
+        doc: "“Trong những năm gần đây, trừ Trung Quốc ra thì tất cả những nơi còn trống chỗ trên Trái đất đều bị các cường quốc ở châu Âu và Bắc Mỹ chiếm cả,... Vì phải hoạt động gấp: nước nào chưa có phần thì có thể chẳng bao giờ có được nữa... Chính vì thế cho nên toàn thể châu Âu và châu Mỹ mới đây đều điên cuồng đi bành trướng thuộc địa và thực hành “chủ nghĩa đế quốc”. Chủ nghĩa này là đặc điểm nổi bật nhất của thời kỳ cuối thế kỷ XIX”. (J.E.Đờ-ri-ô, Những vấn đề chính trị và xã hội...)",
+        subQuestions: [
+          { label: "a", text: "Theo đoạn tư liệu trên, Trung Quốc là quốc gia duy nhất ở châu Á không bị biến thành thuộc địa.", ans: true },
+          { label: "b", text: "Đặc điểm nổi bật của “chủ nghĩa đế quốc” vào những năm cuối thế kỉ XIX - đầu thế kì XX là bành trướng thuộc địa.", ans: true },
+          { label: "c", text: "Vào những năm cuối thế kỉ XIX, các nước Âu Mỹ ra sức “bành trướng thuộc địa” nhằm cạnh tranh ảnh hưởng với Liên Xô.", ans: false },
+          { label: "d", text: "Việc “bành trướng thuộc địa” của các nước Âu Mỹ trong những năm cuối thế kỷ XIX đã vi phạm quyền tự quyết của nhiều dân tộc.", ans: true }
+        ]
+      },
+      {
+        id: 6,
+        doc: "“Điều quan trọng là chủ nghĩa tư bản không thể tồn tại và phát triển được nếu không thường xuyên mở rộng phạm vi thống trị của nó, không khai phá những xứ sở mới và lôi cuốn các xứ sở không phải tư bản chủ nghĩa vào cơn lốc kinh tế thế giới”. (Lênin: Toàn tập, Tập 3, NXB Chính trị quốc gia, 2005)",
+        subQuestions: [
+          { label: "a", text: "Đoạn tư liệu trên đề cập đến quá trình chủ nghĩa tư bản chuyển từ giai đoạn cổ điển sang giai đoạn hiện đại vào cuối thế kỷ XIX – đầu thế kỷ XX.", ans: false },
+          { label: "b", text: "Sự ra đời của chủ nghĩa đế quốc vào những năm cuối thế kỷ XIX – đầu thế kỷ XX là hệ quả trực tiếp của quá trình xâm lược thuộc địa.", ans: false },
+          { label: "c", text: "Chủ nghĩa tư sản vào cuối thế kỷ XIX – đầu thế kỷ XX “thường xuyên mở rộng phạm vi thống trị” để cạnh tranh ảnh hưởng với Liên Xô.", ans: false },
+          { label: "d", text: "Sự ra đời của chủ nghĩa đế quốc vào những năm cuối thế kỷ XIX – đầu thế kỷ XX thể hiện sự phát triển của chủ nghĩa tư bản, mang bản chất kép.", ans: true }
+        ]
+      },
+      {
+        id: 7,
+        doc: "“Ở Hoa Kỳ năm 1908, 7 tơ rơt đầu tiên nắm được hay kiểm soát 1638 công ty... Standard Oil, do Rôc-cơ-pheo-lơ sáng lập năm 1870, lúc đầu chỉ lọc 4% sản lượng dầu mỏ ở Mỹ, nhưng đến năm 1879 đã kiểm soát hơn 90% các nhà máy lọc dầu và đến năm 1905 kiểm soát 85% thương mại quốc gia và 90% xuất khẩu...”. (Mi-xen bộ, Lịch sử chủ nghĩa từ 1500 đến 2000, Nxb Thế giới)",
+        subQuestions: [
+          { label: "a", text: "Đoạn tư liệu trên đề cập đến sự ra đời, phát triển và sụp đổ của các tổ chức độc quyền ở Mỹ vào đầu thế kỷ XX.", ans: false },
+          { label: "b", text: "Sự ra đời của các tổ chức độc quyền ở Mỹ đầu thế kỷ XX là mốc đánh dấu sự mở rộng của chủ nghĩa tư bản ở ngoài châu Âu.", ans: false },
+          { label: "c", text: "Các tổ chức độc quyền ra đời ở Mỹ đầu thế kỷ XX giữ vai trò quan trọng vì đã chi phối toàn bộ nền kinh tế trên toàn thế giới.", ans: false },
+          { label: "d", text: "Sự phát triển của tổ chức độc quyền tạo ra cơ sở cho bước chuyển của chủ nghĩa tư bản từ tự do cạnh tranh sang độc quyền.", ans: true }
+        ]
+      },
+      {
+        id: 8,
+        doc: "“- Sự tập trung sản xuất và tư bản đạt tới một mức độ phát triển cao khiến nó tạo ra những tổ chức độc quyền có một vai trò quyết định trong sinh hoạt kinh tế.\n- Sự hợp nhất tư bản ngân hàng với tư bản công nghiệp và trên cơ sở “tư bản tài chính” đó, xuất hiện một bọn đầu sỏ tài chính.\n- Việc xuất khẩu tư bản, khác với việc xuất khẩu hàng hoá, đã có một ý nghĩa quan trọng đặc biệt.\n- Sự hình thành những liên minh độc quyền quốc tế của bọn tư bản chia nhau thế giới.\n- Việc các cường quốc tư bản chủ nghĩa lớn nhất đã chia nhau xong đất đai trên thế giới.” (Lê-nin, Toàn tập, Tập 27, NXB Sự thật)",
+        subQuestions: [
+          { label: "a", text: "Đoạn tư liệu trên đề cập đến các đặc điểm của chủ nghĩa tư bản trong giai đoạn tự do cạnh tranh cuối thế kỷ XIX.", ans: false },
+          { label: "b", text: "Các cường quốc tư bản chủ nghĩa lớn nhất chia nhau xong thuộc địa là một trong những biểu hiện của chủ nghĩa đế quốc.", ans: true },
+          { label: "c", text: "Vào cuối thế kỷ XIX, tư bản ngân hàng hợp nhất với tư bản nông nghiệp nhằm tăng cường sức cạnh tranh trên thế giới.", ans: false },
+          { label: "d", text: "“Sự hình thành những liên minh độc quyền quốc tế” đã trở thành nguyên nhân trực tiếp làm bùng nổ của cuộc chiến tranh thế giới thứ nhất.", ans: false }
+        ]
+      }
+    ];
+
+    // Working copies for rendering
+    let activeP1Data = [];
+    let activeP2Data = [];
+
+    // --- STATE MANAGEMENT ---
+    let userP1Answers = {}; // { 1: 0, 2: 1, ... }
+    let userP2Answers = {}; // { "1_a": true, "1_b": false, ... }
+    let isSubmitted = false;
+    let timerSeconds = 45 * 60;
+    let timerInterval = null;
+
+    // --- UTILITIES: SHUFFLE ALGORITHM ---
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // --- INITIALIZATION ---
+    window.onload = function() {
+      initExamData(false);
+      startTimer();
+    };
+
+    function initExamData(shouldShuffle = false) {
+      if (shouldShuffle) {
+        // Shuffle Part 1 questions and shuffle option contents while keeping A, B, C, D order fixed
+        activeP1Data = shuffleArray(rawP1Data).map(q => {
+          const originalAnsText = q.options[q.ans];
+          const shuffledOptions = shuffleArray(q.options);
+          const newAnsIndex = shuffledOptions.indexOf(originalAnsText);
+          return {
+            ...q,
+            options: shuffledOptions,
+            ans: newAnsIndex
+          };
+        });
+
+        // Shuffle Part 2 docs and shuffle sub-question contents while keeping a, b, c, d labels fixed
+        activeP2Data = shuffleArray(rawP2Data).map(doc => {
+          const labels = ['a', 'b', 'c', 'd'];
+          const shuffledSubQuestions = shuffleArray(doc.subQuestions);
+          // Re-assign fixed labels a, b, c, d to the shuffled items
+          const fixedSubQuestions = shuffledSubQuestions.map((sub, idx) => ({
+            ...sub,
+            label: labels[idx]
+          }));
+          return {
+            ...doc,
+            subQuestions: fixedSubQuestions
+          };
+        });
+      } else {
+        // Deep copy raw data
+        activeP1Data = rawP1Data.map(q => ({ ...q, options: [...q.options] }));
+        activeP2Data = rawP2Data.map(doc => ({ 
+          ...doc, 
+          subQuestions: doc.subQuestions.map(sub => ({ ...sub }))
+        }));
+      }
+
+      renderP1Questions();
+      renderP2Questions();
+      renderNavigators();
+      restoreSelections();
+    }
+
+    function shuffleAll() {
+      if (isSubmitted) {
+        alert("Bài thi đã nộp, không thể xáo trộn lúc này!");
+        return;
+      }
+      if (Object.keys(userP1Answers).length > 0 || Object.keys(userP2Answers).length > 0) {
+        if (!confirm("Xáo trộn đề thi sẽ giữ nguyên các câu trả lời bạn đã chọn nhưng sắp xếp lại vị trí. Bạn có muốn tiếp tục?")) {
+          return;
+        }
+      }
+      initExamData(true);
+    }
+
+    function restoreSelections() {
+      // Restore P1 visual state
+      Object.keys(userP1Answers).forEach(qId => {
+        const optIdx = userP1Answers[qId];
+        const el = document.getElementById(`p1-opt-${qId}-${optIdx}`);
+        if (el) {
+          el.classList.add('border-indigo-500', 'bg-indigo-50/60', 'ring-1', 'ring-indigo-500');
+          const input = el.querySelector('input');
+          if (input) input.checked = true;
+        }
+        const navBtn = document.getElementById(`nav-p1-${qId}`);
+        if (navBtn) navBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+      });
+
+      // Restore P2 visual state
+      Object.keys(userP2Answers).forEach(key => {
+        const [docId, label] = key.split('_');
+        const val = userP2Answers[key];
+        const btnTrue = document.getElementById(`p2-btn-${docId}-${label}-true`);
+        const btnFalse = document.getElementById(`p2-btn-${docId}-${label}-false`);
+
+        if (val === true && btnTrue && btnFalse) {
+          btnTrue.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-emerald-600 text-white shadow-sm";
+          btnFalse.className = "px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 text-slate-600 hover:bg-rose-50 transition";
+        } else if (val === false && btnTrue && btnFalse) {
+          btnFalse.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-rose-600 text-white shadow-sm";
+          btnTrue.className = "px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 text-slate-600 hover:bg-emerald-50 transition";
+        }
+
+        const navBtn = document.getElementById(`nav-p2-${docId}-${label}`);
+        if (navBtn) navBtn.classList.add('bg-purple-600', 'text-white', 'border-purple-600');
+      });
+
+      updateProgress();
+    }
+
+    // --- RENDER FUNCTIONS ---
+    function renderP1Questions() {
+      const container = document.getElementById('p1-questions-container');
+      container.innerHTML = activeP1Data.map((q, index) => {
+        const labels = ['A', 'B', 'C', 'D'];
+        return `
+          <div id="p1-q-${q.id}" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm transition-all hover:border-indigo-200">
+            <div class="flex items-start gap-3 mb-3">
+              <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shrink-0">Câu ${index + 1}</span>
+              <h4 class="font-semibold text-slate-800 text-base leading-relaxed">${q.q}</h4>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 ml-0 sm:ml-9">
+              ${q.options.map((opt, optIdx) => `
+                <label id="p1-opt-${q.id}-${optIdx}" onclick="selectP1(${q.id}, ${optIdx})" class="flex items-start p-3 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
+                  <input type="radio" name="p1_${q.id}" value="${optIdx}" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
+                  <span class="ml-2.5 text-sm text-slate-700"><strong>${labels[optIdx]}.</strong> ${opt}</span>
+                </label>
+              `).join('')}
+            </div>
+
+            <div id="p1-explain-${q.id}" class="hidden ml-0 sm:ml-9 mt-4 p-3 rounded-lg text-sm"></div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderP2Questions() {
+      const container = document.getElementById('p2-questions-container');
+      container.innerHTML = activeP2Data.map((doc, docIdx) => {
+        return `
+          <div id="p2-doc-${doc.id}" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm transition-all">
+            <div class="flex items-start gap-3 mb-3">
+              <span class="bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shrink-0">Tư liệu ${docIdx + 1}</span>
+              <span class="text-xs font-semibold text-purple-700 bg-purple-100 px-2.5 py-1 rounded-md">Đoạn tư liệu</span>
+            </div>
+            
+            <blockquote class="bg-slate-50 border-l-4 border-purple-400 p-4 rounded-r-lg text-sm text-slate-700 italic leading-relaxed mb-4 whitespace-pre-line">
+              ${doc.doc}
+            </blockquote>
+
+            <div class="space-y-3">
+              ${doc.subQuestions.map(sub => `
+                <div id="p2-sub-${doc.id}-${sub.label}" class="p-3 border border-slate-200 rounded-lg bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div class="text-sm text-slate-800 flex items-start gap-2">
+                    <span class="font-bold text-purple-800 shrink-0">${sub.label})</span>
+                    <span>${sub.text}</span>
+                  </div>
+                  
+                  <div class="flex items-center space-x-2 shrink-0 self-end sm:self-auto">
+                    <button id="p2-btn-${doc.id}-${sub.label}-true" onclick="selectP2(${doc.id}, '${sub.label}', true)" class="px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 text-slate-600 hover:bg-emerald-50 hover:border-emerald-500 transition">
+                      Đúng
+                    </button>
+                    <button id="p2-btn-${doc.id}-${sub.label}-false" onclick="selectP2(${doc.id}, '${sub.label}', false)" class="px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 text-slate-600 hover:bg-rose-50 hover:border-rose-500 transition">
+                      Sai
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderNavigators() {
+      const gridP1 = document.getElementById('nav-p1-grid');
+      gridP1.innerHTML = activeP1Data.map((q, idx) => `
+        <button id="nav-p1-${q.id}" onclick="scrollToQuestion('p1-q-${q.id}', 'p1')" class="w-full aspect-square text-xs font-medium border border-slate-200 rounded hover:bg-indigo-50 text-slate-600 flex items-center justify-center transition">
+          ${idx + 1}
+        </button>
+      `).join('');
+
+      const gridP2 = document.getElementById('nav-p2-grid');
+      let navP2Html = '';
+      activeP2Data.forEach((doc, docIdx) => {
+        doc.subQuestions.forEach(sub => {
+          navP2Html += `
+            <button id="nav-p2-${doc.id}-${sub.label}" onclick="scrollToQuestion('p2-doc-${doc.id}', 'p2')" class="w-full py-1 text-xs font-medium border border-slate-200 rounded hover:bg-purple-50 text-slate-600 flex items-center justify-center transition">
+              ${docIdx + 1}${sub.label}
+            </button>
+          `;
+        });
+      });
+      gridP2.innerHTML = navP2Html;
+    }
+
+    // --- USER INTERACTIONS ---
+    function selectP1(qId, optIdx) {
+      if (isSubmitted) return;
+      userP1Answers[qId] = optIdx;
+
+      // Update UI Radio Visuals
+      for (let i = 0; i < 4; i++) {
+        const el = document.getElementById(`p1-opt-${qId}-${i}`);
+        if (el) {
+          if (i === optIdx) {
+            el.classList.add('border-indigo-500', 'bg-indigo-50/60', 'ring-1', 'ring-indigo-500');
+            el.querySelector('input').checked = true;
+          } else {
+            el.classList.remove('border-indigo-500', 'bg-indigo-50/60', 'ring-1', 'ring-indigo-500');
+          }
+        }
+      }
+
+      // Update Navigator
+      const navBtn = document.getElementById(`nav-p1-${qId}`);
+      if (navBtn) navBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+
+      updateProgress();
+    }
+
+    function selectP2(docId, label, val) {
+      if (isSubmitted) return;
+      const key = `${docId}_${label}`;
+      userP2Answers[key] = val;
+
+      const btnTrue = document.getElementById(`p2-btn-${docId}-${label}-true`);
+      const btnFalse = document.getElementById(`p2-btn-${docId}-${label}-false`);
+
+      if (val === true) {
+        btnTrue.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-emerald-600 text-white shadow-sm";
+        btnFalse.className = "px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 text-slate-600 hover:bg-rose-50 transition";
+      } else {
+        btnFalse.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-rose-600 text-white shadow-sm";
+        btnTrue.className = "px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 text-slate-600 hover:bg-emerald-50 transition";
+      }
+
+      // Update Nav
+      const navBtn = document.getElementById(`nav-p2-${docId}-${label}`);
+      navBtn.classList.add('bg-purple-600', 'text-white', 'border-purple-600');
+
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const p1Count = Object.keys(userP1Answers).length;
+      const p2Count = Object.keys(userP2Answers).length;
+
+      document.getElementById('badge-p1').innerText = `${p1Count}/40`;
+      document.getElementById('badge-p2').innerText = `${p2Count}/32`;
+      document.getElementById('totalProgress').innerText = `${p1Count + p2Count}/72 Hoàn thành`;
+    }
+
+    function switchTab(tab) {
+      const secP1 = document.getElementById('section-p1');
+      const secP2 = document.getElementById('section-p2');
+      const tabP1 = document.getElementById('tab-p1');
+      const tabP2 = document.getElementById('tab-p2');
+
+      if (tab === 'p1') {
+        secP1.classList.remove('hidden');
+        secP2.classList.add('hidden');
+        tabP1.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 bg-indigo-50 text-indigo-700 border border-indigo-200";
+        tabP2.className = "px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-2 border border-transparent";
+      } else {
+        secP1.classList.add('hidden');
+        secP2.classList.remove('hidden');
+        tabP2.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 bg-purple-50 text-purple-700 border border-purple-200";
+        tabP1.className = "px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-2 border border-transparent";
+      }
+    }
+
+    function scrollToQuestion(elementId, tab) {
+      switchTab(tab);
+      setTimeout(() => {
+        const el = document.getElementById(elementId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 50);
+    }
+
+    // --- TIMER LOGIC ---
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          submitExam();
+          return;
+        }
+        timerSeconds--;
+        const mins = Math.floor(timerSeconds / 60);
+        const secs = timerSeconds % 60;
+        const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        document.getElementById('timer').innerText = timeStr;
+        document.getElementById('timerMobile').innerText = timeStr;
+      }, 1000);
+    }
+
+    // --- SUBMISSION & GRADING ---
+    function confirmSubmit() {
+      if (isSubmitted) return;
+      const answeredCount = Object.keys(userP1Answers).length + Object.keys(userP2Answers).length;
+      const total = 72;
+      
+      let msg = "Bạn có chắc chắn muốn nộp bài thi không?";
+      if (answeredCount < total) {
+        msg = `Bạn mới hoàn thành ${answeredCount}/${total} câu. Bạn vẫn muốn nộp bài chứ?`;
+      }
+
+      if (window.confirm(msg)) {
+        submitExam();
+      }
+    }
+
+    function submitExam() {
+      isSubmitted = true;
+      clearInterval(timerInterval);
+
+      let p1Correct = 0;
+      let p2Correct = 0;
+
+      // Grade Part 1
+      activeP1Data.forEach(q => {
+        const userAns = userP1Answers[q.id];
+        const isRight = (userAns === q.ans);
+        if (isRight) p1Correct++;
+
+        // UI Grading
+        const card = document.getElementById(`p1-q-${q.id}`);
+        const explain = document.getElementById(`p1-explain-${q.id}`);
+        const labels = ['A', 'B', 'C', 'D'];
+
+        explain.classList.remove('hidden');
+        if (isRight) {
+          card.classList.add('border-emerald-300', 'bg-emerald-50/20');
+          explain.className = "ml-0 sm:ml-9 mt-3 p-3 rounded-lg text-sm bg-emerald-100 text-emerald-800 font-medium";
+          explain.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i> Chính xác! Đáp án đúng: <strong>${labels[q.ans]}</strong>`;
+        } else {
+          card.classList.add('border-rose-300', 'bg-rose-50/20');
+          explain.className = "ml-0 sm:ml-9 mt-3 p-3 rounded-lg text-sm bg-rose-100 text-rose-800";
+          explain.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1.5"></i> Chưa chính xác. Đáp án đúng là: <strong>${labels[q.ans]}. ${q.options[q.ans]}</strong>`;
+        }
+
+        // Highlight inputs
+        for (let i = 0; i < 4; i++) {
+          const optEl = document.getElementById(`p1-opt-${q.id}-${i}`);
+          if (optEl) {
+            if (i === q.ans) {
+              optEl.classList.add('border-emerald-500', 'bg-emerald-100', 'text-emerald-900', 'font-semibold');
+            } else if (i === userAns) {
+              optEl.classList.add('border-rose-500', 'bg-rose-100', 'text-rose-900');
+            }
+          }
+        }
+      });
+
+      // Grade Part 2
+      activeP2Data.forEach(doc => {
+        doc.subQuestions.forEach(sub => {
+          const key = `${doc.id}_${sub.label}`;
+          const userAns = userP2Answers[key];
+          const isRight = (userAns === sub.ans);
+          if (isRight) p2Correct++;
+
+          const row = document.getElementById(`p2-sub-${doc.id}-${sub.label}`);
+          if (row) {
+            if (isRight) {
+              row.classList.add('border-emerald-300', 'bg-emerald-50/30');
+            } else {
+              row.classList.add('border-rose-300', 'bg-rose-50/30');
+            }
+
+            // Show correct answer badge inside button container
+            const correctTag = document.createElement('span');
+            correctTag.className = "text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-700 ml-2";
+            correctTag.innerText = `Đ.Án: ${sub.ans ? 'Đúng' : 'Sai'}`;
+            row.querySelector('.flex.items-center').appendChild(correctTag);
+          }
+        });
+      });
+
+      // Calculate total scale of 10
+      // Part 1: 40 questions = 5.0 pts (0.125 / q)
+      // Part 2: 32 items = 5.0 pts (0.15625 / item)
+      const totalCorrect = p1Correct + p2Correct;
+      const scoreP1 = (p1Correct / 40) * 5;
+      const scoreP2 = (p2Correct / 32) * 5;
+      const totalScore = (scoreP1 + scoreP2).toFixed(2);
+
+      // Populate Modal Results
+      document.getElementById('finalScore').innerText = totalScore;
+      document.getElementById('correctAnswersCount').innerText = totalCorrect;
+      document.getElementById('p1ResultText').innerText = `${p1Correct}/40 câu (${scoreP1.toFixed(2)} đ)`;
+      document.getElementById('p2ResultText').innerText = `${p2Correct}/32 ý (${scoreP2.toFixed(2)} đ)`;
+      
+      const timeSpent = (45 * 60) - timerSeconds;
+      const spentMins = Math.floor(timeSpent / 60);
+      const spentSecs = timeSpent % 60;
+      document.getElementById('timeSpentText').innerText = `${spentMins} phút ${spentSecs} giây`;
+
+      // Show Modal
+      document.getElementById('resultModal').classList.remove('hidden');
+    }
+
+    function closeModalAndReview() {
+      document.getElementById('resultModal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
